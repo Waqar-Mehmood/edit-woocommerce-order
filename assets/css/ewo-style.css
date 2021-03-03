@@ -1,0 +1,104 @@
+.woocommerce-order-details .edit-order-container {
+    float: left;		
+}
+
+/* Set a style for all buttons */
+.ewo-popup a {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+    text-decoration: none;
+}
+
+.ewo-popup a:hover {
+    opacity: 1;
+}
+
+/* Float cancel and delete buttons and add an equal width */
+.ewo-popup .cancelbtn, 
+.ewo-popup .deletebtn {
+    float: left;
+    width: 50%;
+}
+
+/* Add a color to the cancel button */
+.ewo-popup .cancelbtn {
+    background-color: #ccc;
+    color: black;
+}
+
+/* Add a color to the delete button */
+.ewo-popup .deletebtn {
+    background-color: var(--primary-color);
+}
+
+/* Add padding and center-align text to the container */
+.ewo-popup .container {
+    padding: 16px;
+    text-align: center;
+}
+
+/* The Modal (background) */
+.ewo-popup .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 999; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(71 78 92 / 60%);
+    padding-top: 50px;
+}
+
+/* Modal Content/Box */
+.ewo-popup .modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    max-width: 500px;
+    width: 100%; /* Could be more or less, depending on screen size */
+}
+
+/* Style the horizontal ruler */
+.ewo-popup hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+}
+
+/* The Modal Close Button (x) */
+.ewo-popup .close {
+    position: absolute;
+    right: -27px;
+    top: -50px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #f1f1f1;
+}
+
+.ewo-popup .close:hover,
+.ewo-popup .close:focus {
+    color: #f44336;
+    cursor: pointer;
+}
+
+/* Clear floats */
+.ewo-popup .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Change styles for cancel button and delete button on extra small screens */
+@media screen and (max-width: 300px) {
+    .ewo-popup .cancelbtn, .deletebtn {
+        width: 100%;
+    }
+}

@@ -11,16 +11,16 @@ if ( !function_exists( 'add_action' ) ) {
  * Display credit in user dashboard
  */
 function ewo_user_credit() {
-    
+
     $credit = get_user_meta( get_current_user_id(), 'credit', true );
     $currency_symbol = get_woocommerce_currency_symbol();
 
-    if( empty( $credit ) )  
+    if( empty( $credit ) )
         $credit = 0;
-    
+
     $credit = $currency_symbol . $credit;
     echo '
         <div>
-            <p><b>'. __( 'Credit', 'ewo' ) .':</b> '.$credit.'</p>
+            <p><b>'. __( 'Credit', 'editorder' ) .':</b> '.$credit.'</p>
         </div>';
 }

@@ -8,14 +8,14 @@ if ( !function_exists( 'add_action' ) ) {
 
 add_filter( 'manage_edit-shop_order_columns', 'MY_COLUMNS_FUNCTION' );
 function MY_COLUMNS_FUNCTION( $columns ) {
-    $columns['edit_order'] = __( 'Order Locked' );
+    $columns['edit_order'] = __( 'Order Locked', 'editorder' );
   	return $columns;
 }
 
 add_filter( "manage_edit-shop_order_sortable_columns", 'MY_COLUMNS_SORT_FUNCTION' );
 function MY_COLUMNS_SORT_FUNCTION( $columns ) {
 	$custom = array(
-        'edit_order' => __( 'Order Locked' )
+        'edit_order' => __( 'Order Locked', 'editorder' )
     );
 	return wp_parse_args( $custom, $columns );
 }
@@ -24,30 +24,25 @@ add_action( 'pre_get_posts', 'misha_filter' );
 function misha_filter( $query ) {
 	// if it is not admin area, exit the filter immediately
 	if ( ! is_admin() ) return;
- 
+
 	if( empty( $_GET['orderby'] ) || empty( $_GET['order'] ) ) return;
- 
+
 	if( $_GET['orderby'] == 'Order Locked' ) {
 		$query->set('meta_key', 'edit_order_disable' );
 		$query->set('orderby', 'meta_value'); // or meta_value_num
 		$query->set('order', $_GET['order'] );
 	}
 
-	// echo '<pre>';
-	// print_r( $query );
-	// echo '</pre>';
-	// die();
-
 	return $query;
- 
+
 }
 
 add_action( 'manage_shop_order_posts_custom_column', 'MY_COLUMNS_VALUES_FUNCTION', 2 );
-function MY_COLUMNS_VALUES_FUNCTION( $column ) {	
+function MY_COLUMNS_VALUES_FUNCTION( $column ) {
 	if ( $column == 'edit_order' ) {
         echo '
         <div style="display: flex; align-items: center;">
-            <input type="checkbox" data-productid="' . get_the_ID() .'" class="some_checkbox" ' . checked( 'yes', get_post_meta( get_the_ID(), 'edit_order_disable', true ), false ) . '/>
+            <input type="checkbox" data-productid="' . get_the_ID() .'" class="ewo-order-locked" ' . checked( 'yes', get_post_meta( get_the_ID(), 'edit_order_disable', true ), false ) . '/>
             <small style="display:block;color:#7ad03a"></small>
         <div>';
 	}
@@ -55,9 +50,9 @@ function MY_COLUMNS_VALUES_FUNCTION( $column ) {
 
 add_action( 'admin_footer', 'misha_jquery_event' );
 function misha_jquery_event(){
- 
+
 	echo "<script>jQuery(function($){
-		$('.some_checkbox').click(function(e){
+		$('.ewo-order-locked').click(function(e){
 			var checkbox = $(this),
 			    checkbox_value = (checkbox.is(':checked') ? 'yes' : 'no' );
 			$.ajax({
@@ -78,19 +73,19 @@ function misha_jquery_event(){
 			});
 		});
 	});</script>";
- 
+
 }
 
 // this small piece of code can process our AJAX request
 add_action( 'wp_ajax_productmetasave', 'misha_process_ajax' );
 function misha_process_ajax(){
- 
+
 	check_ajax_referer( 'activatingcheckbox', 'myajaxnonce' );
- 
+
 	if( update_post_meta( $_POST[ 'product_id'] , 'edit_order_disable', $_POST['value'] ) ) {
 		echo 'Saved';
 	}
- 
+
 	die();
 }
 
@@ -101,7 +96,7 @@ function misha_process_ajax(){
  * Tested with: WooCommerce 3.3.1-rc.1
  */
 function add_no_link_to_post_class( $classes ) {
-	if ( current_user_can( 'manage_woocommerce' ) ) { //make sure we are shop managers 
+	if ( current_user_can( 'manage_woocommerce' ) ) { //make sure we are shop managers
         foreach ( $classes as $class ) {
 	        if( $class == 'type-shop_order' ) {
 	            $classes[] = 'no-link';

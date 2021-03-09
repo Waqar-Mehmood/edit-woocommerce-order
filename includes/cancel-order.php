@@ -1,12 +1,10 @@
 <?php declare(strict_types = 1);
 
 /**
- * 
  * Enable cancel functionality
  * Add cancel button in account order's page
- * 
+ *
  * Duration: 1 day
- * 
  */
 function ewo_valid_order_statuses_for_cancel( $statuses, $order ) {
 

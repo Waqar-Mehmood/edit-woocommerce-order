@@ -277,14 +277,23 @@ function ewo_action_woocommerce_ordered_again() {
         wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'woocommerce-order_again' )
     ) {
 
-		// Cancel previous order
-		$order = new WC_Order( $_GET['cancel_order'] );
-		$user_id = $order->get_user_id();
+        $order = new WC_Order( $_GET['cancel_order'] );
+        $id = $order->get_id();
+        $edit_order_disable = get_post_meta( $id, 'edit_order_disable', true );
+        $edit_order_disable = empty( $edit_order_disable ) ? 'no' : $edit_order_disable;
 
-		if( $user_id != get_current_user_id() ) {
-			return;
-		}
+        if( ewo_check_order( $order ) == false ) {
+            return;
+        }
 
+        if( $edit_order_disable == 'yes' ) {
+            $uri_parts = explode('?', $_SERVER['REQUEST_URI'], 2);
+            $actual_link = get_site_url() . $uri_parts[0] . '#edit_order_popup_' . $id;
+            wp_redirect( $actual_link );
+		    exit;
+        }
+
+        // Cancel previous order process
         $order->update_status('cancelled', 'Order cancelled after editing.' );
 		wc_add_order_item_meta( $order->get_id(), 'edit_order_status', $order->get_status(), true );
 		$edit_order_url = site_url( '/my-account/view-order/'.$order->get_id().'/?order_again='.$order->get_id().'&edit_order='.$order->get_id() );
@@ -307,14 +316,14 @@ function ewo_action_woocommerce_ordered_again() {
 function ewo_change_quantity_input( $product_quantity, $cart_item_key, $cart_item ) {
     $product_id = $cart_item['product_id'];
 
-	$edited = WC()->session->get('edit_order');
-
-    if( empty( $edited ) ) {
+    // Check if session is for edited order
+	if( ewo_check_cart_session_for_edited_order() == false ) {
 		return $product_quantity;
-	}
-
-	if( get_post_meta( $product_id, '_ywpo_preorder', true ) === 'yes' ) {
-		return '<span>' . $cart_item['quantity'] . '</span>';
+	} else if( ewo_check_pre_order_product( $product_id ) === true ) {
+        return '
+            <div class="quantity">
+                <input type="number" class="qty" value="'.$cart_item['quantity'].'" disabled>
+            </div>';
 	} else {
 		return $product_quantity;
 	}
@@ -336,9 +345,7 @@ function ewo_filter_woocommerce_cart_item_remove_link( $sprintf, $cart_item_key 
 	// Check if session is for edited order
 	if( ewo_check_cart_session_for_edited_order() == false ) {
 		return $sprintf;
-	}
-
-    if( ewo_check_pre_order_product( $product_id ) == false ) {
+	} else if( ewo_check_pre_order_product( $product_id ) == false ) {
         return $sprintf;
     }
 }

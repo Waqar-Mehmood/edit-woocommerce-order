@@ -15,6 +15,13 @@ if ( !function_exists( 'add_action' ) ) {
  */
 function ewo_check_order( $order ) {
 
+    $id = $order->get_id();
+    $user_id = $order->get_user_id();
+
+    if( $user_id != get_current_user_id() ) {
+        return false;
+    }
+
     if( $order->get_payment_method() == 'bacs' && $order->has_status( 'on-hold' ) ) {
         return false;
     }

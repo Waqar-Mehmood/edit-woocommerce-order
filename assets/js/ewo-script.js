@@ -33,10 +33,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
             }
         } );
 
-        if( window.location.hash ) {
-            // jQuery( `.edit-order[href=${window.location.hash}]` ).trigger( 'click' );
-            document.querySelector( `.edit-order[href=${window.location.hash}]` ).click();
-        }
     });
+
+    if( window.location.hash ) {
+        document.querySelector( `.edit-order[href='${window.location.hash}']` ).click();
+    }
 
 });

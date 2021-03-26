@@ -20,8 +20,8 @@ function MY_COLUMNS_SORT_FUNCTION( $columns ) {
 	return wp_parse_args( $custom, $columns );
 }
 
-add_action( 'pre_get_posts', 'misha_filter' );
-function misha_filter( $query ) {
+add_action( 'pre_get_posts', 'ewo_filter' );
+function ewo_filter( $query ) {
 	// if it is not admin area, exit the filter immediately
 	if ( ! is_admin() ) return;
 
@@ -40,16 +40,23 @@ function misha_filter( $query ) {
 add_action( 'manage_shop_order_posts_custom_column', 'MY_COLUMNS_VALUES_FUNCTION', 2 );
 function MY_COLUMNS_VALUES_FUNCTION( $column ) {
 	if ( $column == 'edit_order' ) {
+		$meta_value = get_post_meta( get_the_ID(), 'edit_order_disable', true );
+		if( empty( $meta_value ) ) $meta_value = 'no';
+		$check_value = checked( 'yes', $meta_value, false );
+		$url = wp_nonce_url( admin_url( 'admin-ajax.php?action=ewo_order_locked&check='.$meta_value.'&order_id='.get_the_ID() ), 'ewo_order_locked_status' );
+
         echo '
-        <div style="display: flex; align-items: center;">
-            <input type="checkbox" data-productid="' . get_the_ID() .'" class="ewo-order-locked" ' . checked( 'yes', get_post_meta( get_the_ID(), 'edit_order_disable', true ), false ) . '/>
-            <small style="display:block;color:#7ad03a"></small>
+        <div>
+			<a href="" style="display: flex; align-items: center;">
+				<input type="checkbox" data-productid="' . get_the_ID() .'" class="ewo-order-locked" ' . $check_value . '/>
+				<small style="display:block;color:#7ad03a"></small>
+			</a>
         <div>';
 	}
 }
 
-add_action( 'admin_footer', 'misha_jquery_event' );
-function misha_jquery_event(){
+add_action( 'admin_footer', 'ewo_jquery_event' );
+function ewo_jquery_event(){
 
 	echo "<script>jQuery(function($){
 		$('.ewo-order-locked').click(function(e){
@@ -77,8 +84,8 @@ function misha_jquery_event(){
 }
 
 // this small piece of code can process our AJAX request
-add_action( 'wp_ajax_productmetasave', 'misha_process_ajax' );
-function misha_process_ajax(){
+add_action( 'wp_ajax_productmetasave', 'ewo_process_ajax' );
+function ewo_process_ajax() {
 
 	check_ajax_referer( 'activatingcheckbox', 'myajaxnonce' );
 
@@ -105,4 +112,4 @@ function add_no_link_to_post_class( $classes ) {
     }
     return $classes;
 }
-add_filter( 'post_class', 'add_no_link_to_post_class' );
+// add_filter( 'post_class', 'add_no_link_to_post_class' );

@@ -53,6 +53,7 @@ add_action( 'admin_notices', 'general_admin_notice' );
 
 // Front End
 add_action( 'init', 'ewo_action_woocommerce_ordered_again', 10, 1 );
+add_action( 'wp_enqueue_scripts', 'ewo_enqueue', 999999 );
 add_action( 'woocommerce_order_details_after_order_table', 'ewo_add_edit_order_button_after_order_table' );
 add_action( 'woocommerce_before_account_orders', 'ewo_add_popup_to_account_orders_page');
 add_action( 'woocommerce_cart_loaded_from_session', 'ewo_detect_edit_order' );

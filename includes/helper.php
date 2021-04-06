@@ -22,7 +22,7 @@ function ewo_check_order( $order ) {
         return false;
     }
 
-    if( $order->get_payment_method() == 'bacs' && $order->has_status( 'on-hold' ) ) {
+    if( $order->get_payment_method() == 'bacs' ) {
         return false;
     }
 

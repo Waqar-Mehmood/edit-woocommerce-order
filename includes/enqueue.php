@@ -48,5 +48,3 @@ function ewo_enqueue() {
 
     wp_enqueue_script( 'ewo-script' );
 }
-
-add_action( 'wp_enqueue_scripts', 'ewo_enqueue', 999999 );

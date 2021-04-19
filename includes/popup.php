@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-require_once __DIR__ . '/helper.php';
-
 // Make sure we don't expose any info if called directly
 if ( !function_exists( 'add_action' ) ) {
 	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
 	exit;
 }
+
+require_once __DIR__ . '/helper.php';
 
 function ewo_add_popup_to_account_orders_page( $has_orders ) {
     ## ==> Define HERE the statuses of that orders

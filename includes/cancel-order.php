@@ -1,5 +1,11 @@
 <?php declare(strict_types = 1);
 
+// Make sure we don't expose any info if called directly
+if ( !function_exists( 'add_action' ) ) {
+	echo 'Hi there!  I\'m just a plugin, not much I can do when called directly.';
+	exit;
+}
+
 /**
  * Enable cancel functionality
  * Add cancel button in account order's page

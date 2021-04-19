@@ -6,7 +6,7 @@ if ( !function_exists( 'add_action' ) ) {
 	exit;
 }
 
-require_once __DIR__ . '/../includes/helper.php';
+require_once __DIR__ . '/../helper.php';
 
 /**
  *
@@ -32,7 +32,9 @@ function ewo_options_page() {
 
 function ewo_register_settings() {
 	//register our settings
-	register_setting( 'ewo-plugin-settings-group', 'ewo_enable_change_order_status' );
+	register_setting( 'ewo-plugin-settings-group', 'ewo_enable_order_locked' );
+
+    register_setting( 'ewo-plugin-settings-group', 'ewo_enable_change_order_status' );
 	register_setting( 'ewo-plugin-settings-group', 'ewo_new_order_status' );
     register_setting( 'ewo-plugin-settings-group', 'ewo_locked_time' );
 
@@ -86,39 +88,16 @@ function ewo_options_page_html() {
                 <h2><?php _e( 'Order Settings', 'editorder' ) ?></h2>
                 <table class="form-table">
                     <tr valign="top">
-                        <th scope="row"><?php _e( 'Enable Email', 'editorder' ) ?></th>
+                        <th scope="row"><?php _e( 'Order Locked', 'editorder' ) ?></th>
                         <td>
                             <input
                                 type="checkbox"
-                                name="ewo_enable_change_order_status"
-                                <?php echo esc_attr( get_option('ewo_enable_change_order_status') ) == 'on' ? 'checked' : ''; ?> />
+                                name="ewo_enable_order_locked"
+                                <?php echo esc_attr( get_option('ewo_enable_order_locked') ) == 'on' ? 'checked' : ''; ?> />
                         </td>
                     </tr>
-
-                    <?php if( false ): ?>
                     <tr valign="top">
-                        <th scope="row"><?php _e( 'New Order Status', 'editorder' ) ?></th>
-                        <td>
-                            <select name="ewo_new_order_status" id="">
-                                <?php
-                                $all_status = wc_get_order_statuses();
-                                foreach ($all_status as $key => $value) { ?>
-
-                                    <option
-                                        <?php echo esc_attr( get_option('ewo_new_order_status') ) == $key ? 'selected' : ''; ?>
-                                        value="<?= $key; ?>">
-                                        <?= $value; ?>
-                                    </option>
-
-                                    <?php
-                                }
-                                ?>
-                            </select>
-                        </td>
-                    </tr>
-
-                    <tr valign="top">
-                        <th scope="row"><?= __( 'Time', 'editorder' ) ?></th>
+                        <th scope="row"><?php _e( 'Time', 'editorder' ) ?></th>
                         <td style="padding-bottom: 0">
                             <input
                                 type="number"
@@ -131,7 +110,15 @@ function ewo_options_page_html() {
                             <label for="ewo_locked_time"><?php _e( 'Hours', 'editorder' ) ?></label>
                         </td>
                     </tr>
-                    <?php endif; ?>
+                    <tr valign="top">
+                        <th scope="row"><?php _e( 'Enable Email', 'editorder' ) ?></th>
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="ewo_enable_change_order_status"
+                                <?php echo esc_attr( get_option('ewo_enable_change_order_status') ) == 'on' ? 'checked' : ''; ?> />
+                        </td>
+                    </tr>
 
                 </table>
             </div>
@@ -309,8 +296,19 @@ add_action( 'wp', 'ewo_custom_cron_job' );
 
 function ewo_custom_cron_job() {
 
+    $order_locked = esc_attr( get_option('ewo_enable_order_locked') );
+
+    if( empty($order_locked) ) {
+
+        if ( wp_next_scheduled( 'ewo_woocommerce_change_order_status' ) ) {
+            wp_clear_scheduled_hook('ewo_woocommerce_change_order_status');
+        }
+
+        return;
+    }
+
     if ( ! wp_next_scheduled( 'ewo_woocommerce_change_order_status' ) ) {
-        wp_schedule_event( time() + ( 60*60*8 ), 'every_three_hours', 'ewo_woocommerce_change_order_status' );
+        wp_schedule_event( time() + ( 60*60*3 ), 'every_three_hours', 'ewo_woocommerce_change_order_status' );
     }
 }
 
@@ -323,8 +321,20 @@ add_action( 'ewo_woocommerce_change_order_status', 'ewo_change_order_status' );
  * 4. Check order and change status tp locked-order
  */
 function ewo_change_order_status() {
-    $date_one = time() + ( 60*60*8 ) + ( 60*60*24 );
-	$date_two = time() + ( 60*60*8 ) + ( 60*60*20 );
+
+    $order_locked = esc_attr( get_option('ewo_enable_order_locked') );
+    if( empty($order_locked) ) {
+        return;
+    }
+
+    $time = esc_attr( get_option('ewo_locked_time') );
+
+    if( empty($time) ) {
+        $time = 24;
+    }
+
+    $date_one = time() + ( 60*60*8 ) + ( 60*60*$time );
+	$date_two = time() + ( 60*60*8 ) + ( 60*60*($time-4) );
 	$orders = ewo_get_orders_before_after( $date_one, $date_two );
 
     write_log( $orders );

@@ -34,9 +34,7 @@ include( 'includes/cancel-order.php' );
 include( 'includes/user-credit.php' );
 
 // Admin
-include( 'admin/create-column-in-shop-order.php' );
-include( 'admin/change-order-status.php' );
-include( 'admin/notices.php' );
+include( 'includes/admin/init.php' );
 
 /**
  * Hooks
@@ -49,7 +47,7 @@ add_filter( 'woocommerce_cart_item_quantity', 'ewo_change_quantity_input', 10, 3
 add_filter( 'woocommerce_cart_item_remove_link', 'ewo_filter_woocommerce_cart_item_remove_link', 100, 2 );
 
 // Admin
-add_action( 'admin_notices', 'general_admin_notice' );
+add_action( 'admin_init', 'ewo_admin_init' );
 
 // Front End
 add_action( 'init', 'ewo_action_woocommerce_ordered_again', 10, 1 );

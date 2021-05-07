@@ -36,7 +36,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     });
 
     if( window.location.hash ) {
-        document.querySelector( `.edit-order[href='${window.location.hash}']` ).click();
+        let edit_order_button = document.querySelector( `.edit-order[href='${window.location.hash}']` );
+        if( edit_order_button ) {
+            edit_order_button.click();
+        }
     }
 
 });

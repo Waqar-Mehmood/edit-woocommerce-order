@@ -19,7 +19,7 @@ function ewo_options_page() {
     add_submenu_page(
         'woocommerce',
         'Options Page',
-        'Options',
+        'Edit Order Options',
         'manage_options',
         'ewo',
         'ewo_options_page_html',
@@ -88,12 +88,13 @@ function ewo_options_page_html() {
                 <h2><?php _e( 'Order Settings', 'editorder' ) ?></h2>
                 <table class="form-table">
                     <tr valign="top">
-                        <th scope="row"><?php _e( 'Order Locked', 'editorder' ) ?></th>
+                        <th scope="row"><?php _e( 'Order automatically locked', 'editorder' ) ?></th>
                         <td>
                             <input
                                 type="checkbox"
                                 name="ewo_enable_order_locked"
                                 <?php echo esc_attr( get_option('ewo_enable_order_locked') ) == 'on' ? 'checked' : ''; ?> />
+                            <label><?php _e( 'Orders will be locked automatically by system', 'editorder' ) ?></label>
                         </td>
                     </tr>
                     <tr valign="top">
@@ -110,6 +111,7 @@ function ewo_options_page_html() {
                             <label for="ewo_locked_time"><?php _e( 'Hours', 'editorder' ) ?></label>
                         </td>
                     </tr>
+                    <?php if(true): ?>
                     <tr valign="top">
                         <th scope="row"><?php _e( 'Enable Email', 'editorder' ) ?></th>
                         <td>
@@ -119,7 +121,7 @@ function ewo_options_page_html() {
                                 <?php echo esc_attr( get_option('ewo_enable_change_order_status') ) == 'on' ? 'checked' : ''; ?> />
                         </td>
                     </tr>
-
+                    <?php endif; ?>
                 </table>
             </div>
 
@@ -127,7 +129,7 @@ function ewo_options_page_html() {
 
             <div>
                 <h2><?php _e( 'Form Settings', 'editorder' ) ?></h2>
-                <p><b><?php _e( 'Note:', 'editorder' ) ?></b> <?php _e( 'Email is automatically send to admin when "Order Locked" is checked for order.', 'editorder' ) ?></p>
+                <p><b><?php _e( 'Note:', 'editorder' ) ?></b> <?php _e( 'Email is automatically sent to admin when "Enable Email" is checked.', 'editorder' ) ?></p>
                 <div class="variables" style="display:none;">
                     <h4><?php _e( 'Variables', 'editorder' ) ?></h4>
                     <p>

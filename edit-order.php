@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Edit WooCommerce Order
  * Description: Edit Order Functionality @ WooCommerce My Account Page
- * Version: 1.21
+ * Version: 1.22
  * Author: Waqar Mehmood
  * Author URI: https://iamwaqar.com
  * Text Domain: editorder

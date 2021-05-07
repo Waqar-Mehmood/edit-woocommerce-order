@@ -11,7 +11,6 @@ function ewo_manage_order_columns( $column ) {
 		$meta_value = get_post_meta( get_the_ID(), 'edit_order_disable', true );
 		if( empty( $meta_value ) ) $meta_value = 'no';
 		$check_value = checked( 'yes', $meta_value, false );
-		$url = wp_nonce_url( admin_url( 'admin-ajax.php?action=ewo_order_locked&check='.$meta_value.'&order_id='.get_the_ID() ), 'ewo_order_locked_status' );
 
         echo '
         <div>

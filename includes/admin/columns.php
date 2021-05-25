@@ -77,7 +77,9 @@ function ewo_process_ajax() {
 
 	check_ajax_referer( 'activatingcheckbox', 'myajaxnonce' );
 
-	if( update_post_meta( $_POST[ 'product_id'] , 'edit_order_disable', $_POST['value'] ) ) {
+	$prev_value = $_POST['value'] == 'yes' ? 'no' : 'yes';
+
+	if( update_post_meta( $_POST[ 'product_id'] , 'edit_order_disable', $_POST['value'], $prev_value ) ) {
 		echo 'Saved';
 	}
 

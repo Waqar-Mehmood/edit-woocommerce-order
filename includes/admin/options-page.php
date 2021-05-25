@@ -285,8 +285,8 @@ add_filter( 'cron_schedules', 'ewo_check_every_3_hours' );
 function ewo_check_every_3_hours( $schedules ) {
 
     $schedules['every_three_hours'] = array(
-        'interval' => 60 * 60 * 3, // Last digit represents hours
-        'display'  => __( 'Every 3 hours', 'editorder' ),
+        'interval' => 60 * 60 * 2, // Last digit represents hours
+        'display'  => __( 'Every 2 hours', 'editorder' ),
     );
     return $schedules;
 }
@@ -310,7 +310,7 @@ function ewo_custom_cron_job() {
     }
 
     if ( ! wp_next_scheduled( 'ewo_woocommerce_change_order_status' ) ) {
-        wp_schedule_event( time() + ( 60*60*3 ), 'every_three_hours', 'ewo_woocommerce_change_order_status' );
+        wp_schedule_event( time() + ( 60*60*2 ), 'every_two_hours', 'ewo_woocommerce_change_order_status' );
     }
 }
 
@@ -335,11 +335,9 @@ function ewo_change_order_status() {
         $time = 24;
     }
 
-    $date_one = time() + ( 60*60*8 ) + ( 60*60*$time );
+    $date_one = time() + ( 60*60*8 ) + ( 60*60*($time+48) );
 	$date_two = time() + ( 60*60*8 ) + ( 60*60*($time-4) );
 	$orders = ewo_get_orders_before_after( $date_one, $date_two );
-
-    write_log( $orders );
 
 	if ( $orders ) {
 		foreach ( $orders as $key => $order_id ) {
@@ -364,9 +362,37 @@ function ewo_change_order_status() {
  * 5. Query WooCommerce database for completed orders between two timestamps
  */
 function ewo_get_orders_before_after( $date_one, $date_two ) {
+
+    // _orddd_timeslot_timestamp
+
     global $wpdb;
     $p = $wpdb->prefix;
     $qry = "SELECT {$p}posts.ID
+        FROM {$p}posts
+        INNER JOIN {$p}postmeta
+        ON ( {$p}posts.ID = {$p}postmeta.post_id )
+        WHERE ( {$p}postmeta.meta_key = '_orddd_timeslot_timestamp' AND {$p}postmeta.meta_value <= $date_one AND {$p}postmeta.meta_value >= $date_two )
+        AND {$p}posts.post_type = 'shop_order'
+        AND ( {$p}posts.post_status = 'wc-processing' OR {$p}posts.post_status = 'wc-on-hold' OR {$p}posts.post_status = 'wc-pending' )";
+
+    $orders = $wpdb->get_results( $qry );
+
+    $log = $qry;
+    if ( is_array( $log ) || is_object( $log ) ) {
+        error_log( print_r( $log, true ) );
+    } else {
+        error_log( $log );
+    }
+
+    $log = $orders;
+    if ( is_array( $log ) || is_object( $log ) ) {
+        error_log( print_r( $log, true ) );
+    } else {
+        error_log( $log );
+    }
+
+    if ( sizeof($orders) < 1 ) {
+        $qry = "SELECT {$p}posts.ID
         FROM {$p}posts
         INNER JOIN {$p}postmeta
         ON ( {$p}posts.ID = {$p}postmeta.post_id )
@@ -374,8 +400,23 @@ function ewo_get_orders_before_after( $date_one, $date_two ) {
         AND {$p}posts.post_type = 'shop_order'
         AND ( {$p}posts.post_status = 'wc-processing' OR {$p}posts.post_status = 'wc-on-hold' OR {$p}posts.post_status = 'wc-pending' )";
 
-    $orders = $wpdb->get_results( $qry );
-    write_log( $qry );
+        $orders = $wpdb->get_results( $qry );
+    }
+
+    $log = $qry;
+    if ( is_array( $log ) || is_object( $log ) ) {
+        error_log( print_r( $log, true ) );
+    } else {
+        error_log( $log );
+    }
+
+    $log = $orders;
+    if ( is_array( $log ) || is_object( $log ) ) {
+        error_log( print_r( $log, true ) );
+    } else {
+        error_log( $log );
+    }
+
    	return $orders;
 }
 

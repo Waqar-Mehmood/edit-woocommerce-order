@@ -14,7 +14,7 @@ function ewo_enqueue() {
     // Register the EWO Style file.
     wp_register_style(
         'ewo-style',
-        EWO_PLUGIN_PATH . 'assets/css/ewo-style.css',
+        EWO_PLUGIN_PATH . 'assets/css/ewo-style.min.css',
         array(),
         EWO_CURRENT_VERSION,
         false
